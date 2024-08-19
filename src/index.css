@@ -9,4 +9,5 @@ body {
   justify-content: center;
   background-color: #E8E8E8;
   height: 100vh;
+  overflow-y: hidden;
 }

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const UserLoginContext = createContext();
@@ -14,18 +14,22 @@ export const StorageLogin = ({ children }) => {
   });
   const navigate = useNavigate();
 
-  const fetchUsers = async () => {
-    const us = await fetch("user.json");
-    if (!us.ok) throw new TypeError("Sem users encontrado.");
-    const respostaUsers = await us.json();
-    setUsers(respostaUsers);
-  };
+  const fetchUsers = useCallback(async () => {
+    try {
+      const us = await fetch("user.json");
+      if (!us.ok) throw new Error("Sem usuários encontrados.");
+      const respostaUsers = await us.json();
+      setUsers(respostaUsers);
+    } catch (error) {
+      setErroUsers(error.message);
+    }
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
-  const criarUsers = (e) => {
+  const criarUsers = useCallback((e) => {
     e.preventDefault();
     const newUsers = {
       username: forms?.nome,
@@ -33,10 +37,9 @@ export const StorageLogin = ({ children }) => {
       password: forms?.senha,
     };
 
-    let quantyLength;
-    Object.values(newUsers)?.map((item) => {
-      return (quantyLength = item?.length === 0 ? true : false);
-    });
+    let quantyLength = Object.values(newUsers).some(
+      (item) => item.length === 0
+    );
 
     if (quantyLength) {
       setErroUsers("erro ao criar conta!");
@@ -47,19 +50,19 @@ export const StorageLogin = ({ children }) => {
       setErroUsers(null);
       delayNavigate();
       localStorage.setItem("user", JSON.stringify(newUsers));
-      setForms("");
+      setForms({ nome: "", email: "", senha: "" });
       return true;
     }
-  };
+  });
 
-  const delayNavigate = () => {
-    return setTimeout(() => {
+  const delayNavigate = useCallback(() => {
+    setTimeout(() => {
       navigate("/login");
       setSucess(null);
     }, 1000);
-  };
+  }, [navigate]);
 
-  const logarUsers = (e) => {
+  const logarUsers = useCallback((e) => {
     e.preventDefault();
 
     const storage = localStorage.getItem("user");
@@ -83,7 +86,7 @@ export const StorageLogin = ({ children }) => {
       } else {
         setErroUsers(null);
         setUsers({ ...users, user });
-        setForms("");
+        setForms({ nome: "", email: "", senha: "" });
         navigate("/");
       }
 
@@ -97,7 +100,7 @@ export const StorageLogin = ({ children }) => {
 
       return userSearch;
     }
-  };
+  });
 
   return (
     <UserLoginContext.Provider
