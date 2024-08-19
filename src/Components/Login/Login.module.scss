@@ -1,0 +1,64 @@
+$backColor: #111827;
+$colorPink: #a78bfa;
+$colorDarkaGrey: rgba(156, 163, 175, 1);
+
+.wrapper {
+  max-width: 1000px;
+  padding: 15px;
+  margin: 0px 20px;
+  background: $backColor;
+  border-radius: 8px;
+
+  h1 {
+    color: #ffffff;
+  }
+
+  .form {
+    max-width: 300px;
+    background: $backColor;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+
+    input {
+      font-size: 17px;
+      padding: 10px;
+      display: block;
+      margin-bottom: 15px;
+      width: 100%;
+      color: $colorDarkaGrey;
+      background: $backColor;
+      outline: none;
+      border: 0.5px solid $colorDarkaGrey;
+      border-radius: 8px;
+      transition: 0.3s all;
+
+      &:focus:hover {
+        border: 1px solid $colorPink;
+      }
+    }
+
+    a {
+      color: $colorDarkaGrey;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    button {
+      font-size: 17px;
+      font-weight: 600;
+      margin-top: 10px;
+      width: 107%;
+      padding: 8px;
+      color: $backColor;
+      background: $colorPink;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+    }
+  }
+}
