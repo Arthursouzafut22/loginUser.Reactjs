@@ -29,31 +29,34 @@ export const StorageLogin = ({ children }) => {
     fetchUsers();
   }, [fetchUsers]);
 
-  const criarUsers = useCallback((e) => {
-    e.preventDefault();
-    const newUsers = {
-      username: forms?.nome,
-      email: forms?.email,
-      password: forms?.senha,
-    };
+  const criarUsers = useCallback(
+    (e) => {
+      e.preventDefault();
+      const newUsers = {
+        username: forms?.nome,
+        email: forms?.email,
+        password: forms?.senha,
+      };
 
-    let quantyLength = Object.values(newUsers).some(
-      (item) => item.length === 0
-    );
+      let quantyLength = Object.values(newUsers).some(
+        (item) => item.length === 0
+      );
 
-    if (quantyLength) {
-      setErroUsers("erro ao criar conta!");
-      return false;
-    } else {
-      setUsers({ ...users, newUsers });
-      setSucess("Conta criada com sucesso!");
-      setErroUsers(null);
-      delayNavigate();
-      localStorage.setItem("user", JSON.stringify(newUsers));
-      setForms({ nome: "", email: "", senha: "" });
-      return true;
-    }
-  });
+      if (quantyLength) {
+        setErroUsers("erro ao criar conta!");
+        return false;
+      } else {
+        setUsers({ ...users, newUsers });
+        setSucess("Conta criada com sucesso!");
+        setErroUsers(null);
+        delayNavigate();
+        localStorage.setItem("user", JSON.stringify(newUsers));
+        setForms({ nome: "", email: "", senha: "" });
+        return true;
+      }
+    },
+    [forms, users]
+  );
 
   const delayNavigate = useCallback(() => {
     setTimeout(() => {
@@ -62,45 +65,52 @@ export const StorageLogin = ({ children }) => {
     }, 1000);
   }, [navigate]);
 
-  const logarUsers = useCallback((e) => {
-    e.preventDefault();
+  const logarUsers = useCallback(
+    (e) => {
+      e.preventDefault();
 
-    const storage = localStorage.getItem("user");
-    const user = JSON.parse(storage);
-    if (user) {
-      const { username, email, password } = user;
+      const storage = localStorage.getItem("user");
+      const user = JSON.parse(storage);
+      if (user) {
+        const { username, email, password } = user;
 
-      let usersCaixa;
-      Object.values(user)?.map((item) => {
-        return (usersCaixa = item?.length === 0 ? true : false);
-      });
+        let usersCaixa = Object.values(user)?.some((item) => {
+          return item?.length === 0;
+        });
 
-      if (
-        usersCaixa ||
-        username !== forms?.nome ||
-        email !== forms?.email ||
-        password !== forms?.senha
-      ) {
-        setErroUsers("Usuario não encontrado");
-        return false;
-      } else {
-        setErroUsers(null);
-        setUsers({ ...users, user });
-        setForms({ nome: "", email: "", senha: "" });
-        navigate("/");
+        if (
+          usersCaixa ||
+          username !== forms?.nome ||
+          email !== forms?.email ||
+          password !== forms?.senha
+        ) {
+          setErroUsers("Usuario não encontrado");
+          return false;
+        } else {
+          setErroUsers(null);
+          setUsers({ ...users, user });
+          setForms({ nome: "", email: "", senha: "" });
+          navigate("/");
+        }
+
+        const userSearch = users?.find((dados) => {
+          return (
+            dados?.username === username &&
+            dados?.email === email &&
+            dados?.password === password
+          );
+        });
+
+        return userSearch;
       }
+    },
+    [forms, navigate, users]
+  );
 
-      const userSearch = users?.find((dados) => {
-        return (
-          dados?.username === username &&
-          dados?.email === email &&
-          dados?.password === password
-        );
-      });
-
-      return userSearch;
-    }
-  });
+  const userLogaute = () => {
+    setUsers(null);
+    navigate("/login");
+  };
 
   return (
     <UserLoginContext.Provider
@@ -112,6 +122,7 @@ export const StorageLogin = ({ children }) => {
         setForms,
         sucess,
         erroUsers,
+        userLogaute,
       }}
     >
       {children}
